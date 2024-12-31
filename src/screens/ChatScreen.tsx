@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const GEMINI_API_KEY = '';  // Replace with your Gemini API Key
-const API_URL = 'http://10.0.2.2:5000';  // Replace with your backend URL
+const GEMINI_API_KEY = 'your gemini api';  
+const API_URL = 'http://10.0.2.2:5000';  
 
 type Message = {
   text: string;
@@ -28,7 +28,7 @@ const ChatScreen = ({ navigate }: { navigate: (screen: string) => void }) => {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
         Alert.alert('Error', 'User not authenticated');
-        navigate('LoginScreen');  // Redirect to login if token is missing
+        navigate('LoginScreen');  
         return;
       }
 
@@ -96,15 +96,11 @@ const ChatScreen = ({ navigate }: { navigate: (screen: string) => void }) => {
     setMsg('');
 
     try {
-      // Save user message to backend
       await saveMessageToBackend(userMessage);
-
-      // Get response from Gemini API
       const geminiReply = await fetchGeminiReply(msg);
       const geminiMessage: Message = { text: geminiReply, sender: 'gemini' };
       setMessages(prevMessages => [geminiMessage, ...prevMessages]);
 
-      // Save Gemini response to backend
       await saveMessageToBackend(geminiMessage);
     } catch (error) {
       console.error('Error:', error);

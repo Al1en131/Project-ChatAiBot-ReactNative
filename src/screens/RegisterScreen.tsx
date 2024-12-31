@@ -24,7 +24,7 @@ export default function RegisterScreen({navigation}: any) {
     try {
       await axios.post(`${API_URL}/register`, {email, password});
       Alert.alert('Success', 'Registered successfully!');
-      navigation.navigate('Login'); // Navigate to Login after successful registration
+      navigation.navigate('Login'); 
     } catch (error: any) {
       console.error(error);
       Alert.alert(

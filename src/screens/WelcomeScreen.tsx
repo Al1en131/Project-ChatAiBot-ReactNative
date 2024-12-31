@@ -1,4 +1,3 @@
-// src/screens/WelcomeScreen.tsx
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FF8EC7', // Pink seperti pada gambar
+    backgroundColor: '#FF8EC7', 
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -26,9 +26,9 @@ export default function LoginScreen({navigation}: any) {
       const response = await axios.post(`${API_URL}/login`, {email, password});
       const {token} = response.data;
 
-      await AsyncStorage.setItem('userToken', token); // Save token in storage
+      await AsyncStorage.setItem('userToken', token); 
       Alert.alert('Success', 'Logged in successfully!');
-      navigation.navigate('Home'); // Navigate to Home after login
+      navigation.navigate('Home'); 
     } catch (error: any) {
       console.error(error);
       Alert.alert(
@@ -205,7 +205,6 @@ const styles = StyleSheet.create({
     color: '#FB9EC6',
     fontWeight: 'bold',
   },
-  // Styles for the checkbox
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
