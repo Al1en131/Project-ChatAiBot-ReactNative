@@ -8,6 +8,7 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -26,7 +27,7 @@ const Header = () => (
 );
 
 const ChatBotAiScreen = ({ navigate }: { navigate: (screen: string) => void }) => {
-  const [msg, setMsg] = useState<string>('');
+  const [inputText, setInputText] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
 
   const saveMessageToBackend = async (message: Message) => {
@@ -58,15 +59,7 @@ const ChatBotAiScreen = ({ navigate }: { navigate: (screen: string) => void }) =
     }
   };
 
-  const fetchTwinkleTalkReply = async (userMessage: string) => {
-    // Deteksi pertanyaan tentang nama
-    const keywords = ['nama', 'siapa kamu', 'what is your name', 'who are you'];
-    const lowerCaseMessage = userMessage.toLowerCase();
-
-    if (keywords.some(keyword => lowerCaseMessage.includes(keyword))) {
-      return 'Saya adalah TwinkleTalk, asisten AI Anda!';
-    }
-
+  const fetchDynamicResponse = async (category: string) => {
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${TWINKLETALK_API_KEY}`,
@@ -80,51 +73,56 @@ const ChatBotAiScreen = ({ navigate }: { navigate: (screen: string) => void }) =
               {
                 parts: [
                   {
-                    text: userMessage,
+                    text: `Berikan saya saran atau informasi tentang kategori: ${category}`,
                   },
                 ],
               },
             ],
-          }),
+          })
         }
       );
 
       const data = await response.json();
       const reply =
-        data.candidates?.[0]?.content?.parts?.[0]?.text || 'TwinkleTalk is here to help!';
+        data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'TwinkleTalk tidak dapat memberikan respons untuk kategori ini.';
       return reply;
     } catch (error) {
-      console.error('Error fetching TwinkleTalk response:', error);
-      return 'Error occurred in TwinkleTalk';
+      console.error('Error fetching dynamic response:', error);
+      return 'Error occurred while fetching response';
     }
   };
 
-  const handleButtonClick = async () => {
-    if (!msg.trim()) {
-      Alert.alert('Error', 'Message cannot be empty');
+  const handleSearchClick = async () => {
+    if (!inputText.trim()) {
+      Alert.alert('Error', 'Input tidak boleh kosong');
       return;
     }
 
-    const userMessage: Message = { text: msg, sender: 'user' };
+    const userMessage: Message = { text: inputText, sender: 'user' };
     setMessages(prevMessages => [userMessage, ...prevMessages]);
-    setMsg('');
 
     try {
-      await saveMessageToBackend(userMessage);
-      const twinkletalkReply = await fetchTwinkleTalkReply(msg);
-      const twinkleMessage: Message = { text: twinkletalkReply, sender: 'twinkletalk' };
-      setMessages(prevMessages => [twinkleMessage, ...prevMessages]);
+      // Directly pass user input as the category to the API
+      const aiMessageText = await fetchDynamicResponse(inputText);
 
-      await saveMessageToBackend(twinkleMessage);
+      const aiMessage: Message = { text: aiMessageText, sender: 'twinkletalk' };
+      setMessages(prevMessages => [aiMessage, ...prevMessages]);
+
+      await saveMessageToBackend(userMessage);
+      await saveMessageToBackend(aiMessage);
     } catch (error) {
       console.error('Error:', error);
-      Alert.alert('Error', 'An error occurred. Please try again.');
+      Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
     }
   };
 
   const renderItem = ({ item }: { item: Message }) => (
     <View
-      style={[styles.message, item.sender === 'user' ? styles.userMessage : styles.twinkletalkMessage]}
+      style={[
+        styles.message,
+        item.sender === 'user' ? styles.userMessage : styles.twinkletalkMessage,
+      ]}
     >
       <Text
         style={[
@@ -140,6 +138,14 @@ const ChatBotAiScreen = ({ navigate }: { navigate: (screen: string) => void }) =
   return (
     <SafeAreaView style={styles.container}>
       <Header />
+      <Image
+        source={require('../assets/image/blob-3.png')}
+        style={styles.blob}
+      />
+      <Image
+        source={require('../assets/image/blob-4.png')}
+        style={styles.blob2}
+      />
       <FlatList
         data={messages}
         renderItem={renderItem}
@@ -150,36 +156,60 @@ const ChatBotAiScreen = ({ navigate }: { navigate: (screen: string) => void }) =
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
-          placeholder="Enter Your Query...."
-          value={msg}
-          onChangeText={setMsg}
-          placeholderTextColor="black"
+          placeholder="Masukkan kategori atau topik motivasi..."
+          value={inputText}
+          onChangeText={setInputText}
+          placeholderTextColor="white"
         />
-        <TouchableOpacity style={styles.button} onPress={handleButtonClick}>
-          <Text style={styles.buttonText}>Send</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSearchClick}>
+        <Image
+            source={require('../assets/image/search.png')}
+            style={styles.send}
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#494F55',
+    backgroundColor: 'black',
+    position: 'relative',
+    height: '100%',
+    width: '100%',
   },
+
+  blob: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  blob2: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+  },
+  blob3: {
+    position: 'absolute',
+    right: 0,
+    top: 40,
+  },
+  blob4: {position: 'absolute', left: 0, top: 150},
   header: {
-    backgroundColor: 'blue',
-    padding: 15,
+    backgroundColor: 'rgba(253,89,213, 0.25);',
+    padding: 20,
     alignItems: 'center',
   },
   headerText: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     color: 'white',
   },
   messagesContainer: {
-    padding: 10,
+    padding: 20,
   },
   message: {
     maxWidth: '80%',
@@ -188,47 +218,66 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userMessage: {
-    backgroundColor: 'blue',
+    backgroundColor: 'rgba(253,89,213, 0.25)',
     alignSelf: 'flex-end',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    borderTopRightRadius: 5,
+    marginVertical: 5,
+    maxWidth: '75%',
   },
+
   twinkletalkMessage: {
-    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#FA4B95',
     alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    borderTopLeftRadius: 5,
+    marginVertical: 5,
+    maxWidth: '75%',
   },
+
   messageText: {
-    color: 'white',
+    fontSize: 16,
+    lineHeight: 22,
   },
+
   userMessageText: {
     color: 'white',
   },
+
   twinkletalkMessageText: {
-    color: 'black',
+    color: '#FA4B95',
   },
+
   inputView: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 15,
-    backgroundColor: '#494F55',
   },
   input: {
     flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.20);',
+    borderRadius: 29,
+    paddingVertical: 15,
+    paddingHorizontal: 18,
     marginRight: 10,
-    color: 'black',
+    color: 'white',
   },
   button: {
-    backgroundColor: 'blue',
-    borderRadius: 20,
-    paddingVertical: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.20);',
+    borderRadius: 28,
+    paddingVertical: 14,
     paddingHorizontal: 15,
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  send: {
+    alignItems: 'center',
+    width: 25,
+    height: 25,
   },
 });
 

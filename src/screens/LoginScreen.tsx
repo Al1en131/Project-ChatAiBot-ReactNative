@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -26,9 +27,9 @@ export default function LoginScreen({navigation}: any) {
       const response = await axios.post(`${API_URL}/login`, {email, password});
       const {token} = response.data;
 
-      await AsyncStorage.setItem('userToken', token); 
+      await AsyncStorage.setItem('userToken', token);
       Alert.alert('Success', 'Logged in successfully!');
-      navigation.navigate('Home'); 
+      navigation.navigate('Home');
     } catch (error: any) {
       console.error(error);
       Alert.alert(
@@ -40,139 +41,147 @@ export default function LoginScreen({navigation}: any) {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/image/blob.png')} style={styles.blob} />
+      <Image
+        source={require('../assets/image/blob-2.png')}
+        style={styles.blob2}
+      />
       <View style={styles.imageContainer}>
-        {/* <Image
-          source={require('../assets/images/auth.png')}
+        <Image
+          source={require('../assets/image/robot-ai.png')}
           style={styles.logo}
-        /> */}
+        />
       </View>
       <View style={styles.formContainer}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>Sign In</Text>
-          <View style={styles.border}></View>
-        </View>
+        <View style={styles.headerContainer}></View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
           <View style={styles.inputWrapper}>
-            {/* <Image
-              source={require('../assets/images/icon-message.png')}
+            <Image
+              source={require('../assets/image/mail.png')}
               style={styles.icon}
-            /> */}
+            />
             <TextInput
               style={styles.input}
               placeholder="Enter your Email"
-              placeholderTextColor="#616161"
+              placeholderTextColor="#FA4B95"
               value={email}
               onChangeText={setEmail}
             />
           </View>
-
           <Text style={styles.label}>Password</Text>
           <View style={styles.inputWrapper}>
-            {/* <Image
-              source={require('../assets/images/icon-password.png')}
+            <Image
+              source={require('../assets/image/password.png')}
               style={styles.icon}
-            /> */}
+            />
             <TextInput
               style={styles.input}
               placeholder="Enter your password"
-              placeholderTextColor="#616161"
+              placeholderTextColor="#FA4B95"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
           </View>
         </View>
-        {/* {error && <Text style={styles.error}>{error}</Text>} */}
-
-        {/* Checkbox for agreeing to terms */}
-        {/* <View style={styles.checkboxContainer}>
-          <TouchableOpacity
-            style={styles.checkboxWrapper}
-            onPress={() => setIsChecked(!isChecked)}>
-            <View style={[styles.checkbox, isChecked && styles.checked]}>
-              {isChecked && <Text style={styles.checkMark}>✓</Text>}
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>
-            I agree to the terms and conditions
-          </Text>
-        </View> */}
 
         <TouchableOpacity
           style={styles.btnlogin}
           onPress={handleLogin}
           activeOpacity={0.8}>
-          <Text style={styles.btnText}>Sign In</Text>
+          <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
 
         <Text style={styles.signUpText}>
           Don’t have an Account?{' '}
-          <Text style={styles.signUpLink} onPress={() => navigation.navigate('Register')}>
-            Sign up
+          <Text
+            style={styles.signUpLink}
+            onPress={() => navigation.navigate('Register')}>
+            Register
           </Text>
         </Text>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     height: '100%',
     width: '100%',
+    position: 'relative',
+    paddingVertical: 20,
+  },
+  blob: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  blob2: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
   imageContainer: {
+    alignItems: 'center',
     height: '40%',
+    marginTop: 20,
   },
   logo: {
     width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
+
   formContainer: {
     padding: 20,
+    height: '60%',
     flex: 1,
   },
   headerContainer: {
-    marginBottom: 65,
+    marginBottom: 50,
+    alignItems: 'center',
   },
   header: {
     fontSize: 40,
-    color: 'black',
+    textAlign: 'center',
+    color: 'white',
     fontWeight: 'bold',
     paddingBottom: 10,
   },
   border: {
     borderBottomWidth: 3,
-    borderBottomColor: '#FB9EC6',
-    width: '25%',
-    alignSelf: 'flex-start',
+    borderBottomColor: '#FA4B95',
+    width: '40%',
+    alignSelf: 'center',
   },
   inputContainer: {
     width: '100%',
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
-    color: 'black',
+    marginBottom: 10,
+    color: '#FA4B95',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FB9EC6',
-    marginBottom: 15,
+    borderColor: '#FA4B95',
+    marginBottom: 26,
     paddingHorizontal: 10,
-    paddingTop: 3,
-    paddingBottom: 3,
-    borderRadius: 5,
+    paddingTop: 6,
+    paddingBottom: 6,
+    borderRadius: 10,
   },
   input: {
     flex: 1,
     fontSize: 16,
-    paddingLeft: 10,
-    color: 'black',
+    paddingLeft: 8,
+    color: '#FA4B95',
   },
   error: {
     color: 'red',
@@ -184,9 +193,9 @@ const styles = StyleSheet.create({
     height: 18,
   },
   btnlogin: {
-    paddingVertical: 12,
-    backgroundColor: '#FB9EC6',
-    borderRadius: 5,
+    paddingVertical: 17,
+    backgroundColor: 'rgba(255, 255, 255, 0.20);',
+    borderRadius: 13,
     marginBottom: 10,
     alignItems: 'center',
   },
@@ -202,7 +211,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   signUpLink: {
-    color: '#FB9EC6',
+    color: '#FA4B95',
     fontWeight: 'bold',
   },
   checkboxContainer: {
