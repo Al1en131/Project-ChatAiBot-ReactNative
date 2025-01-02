@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,9 +6,26 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({navigation}: any) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('userEmail');
+      Alert.alert('Success', 'You have been logged out!');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      Alert.alert('Error', 'Failed to log out');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -20,9 +37,34 @@ export default function HomeScreen({navigation}: any) {
         style={styles.blob2}
       />
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.menuIcon}>☰</Text>
+        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+          <Text style={styles.menuIcon}>☰</Text> {/* Ikon menu */}
         </TouchableOpacity>
+
+        {/* Modal untuk dropdown */}
+        <Modal
+          visible={isModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setIsModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity
+                onPress={handleLogout}
+                activeOpacity={0.8}
+                style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setIsModalVisible(false)}
+                activeOpacity={0.8}
+                style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
         <TouchableOpacity>
           <Image
             source={{uri: 'https://flagcdn.com/fr.svg'}}
@@ -30,6 +72,7 @@ export default function HomeScreen({navigation}: any) {
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.cardHeader}>
         <View style={styles.cardContent}>
           <Text style={styles.greeting}>Halo, Aku Pinkie!</Text>
@@ -40,7 +83,7 @@ export default function HomeScreen({navigation}: any) {
         </View>
         <View style={styles.cardImageContainer}>
           <Image
-            source={require('../assets/image/robot-ai.png')} // Sesuaikan path dengan lokasi gambar
+            source={require('../assets/image/robot-ai.png')}
             style={styles.cardImage}
             resizeMode="contain"
           />
@@ -53,6 +96,7 @@ export default function HomeScreen({navigation}: any) {
         showsVerticalScrollIndicator={false}>
         <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate('ChatBot')}>
           <View style={styles.iconBackground}>
             <Image
@@ -67,9 +111,10 @@ export default function HomeScreen({navigation}: any) {
             </Text>
           </View>
         </TouchableOpacity>
-        {/* Directly using TouchableOpacity for each card */}
+
         <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate('ChatBotQuote')}>
           <View style={styles.iconBackground}>
             <Image
@@ -87,6 +132,7 @@ export default function HomeScreen({navigation}: any) {
 
         <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate('ChatBotRecipe')}>
           <View style={styles.iconBackground}>
             <Image
@@ -104,6 +150,7 @@ export default function HomeScreen({navigation}: any) {
 
         <TouchableOpacity
           style={styles.card}
+          activeOpacity={0.8}
           onPress={() => navigation.navigate('ChatBotCity')}>
           <View style={styles.iconBackground}>
             <Image
@@ -131,6 +178,34 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     position: 'relative',
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'rgba(255, 255, 255, 0.30);',
+    borderRadius: 10,
+    padding: 20,
+    width: 200,
+    alignItems: 'center',
+  },
+  modalButton: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: 'rgba(253,74,151, 0.75)',
+    borderRadius: 5,
+    width: '100%',
+  },
+  modalButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  flagIcon: {
+    width: 30,
+    height: 20,
+  },
   blob: {
     position: 'absolute',
     top: 0,
@@ -153,11 +228,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FA4B95',
   },
-  flagIcon: {
-    width: 30,
-    height: 20,
-    borderRadius: 5,
-  },
   subheading: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -176,7 +246,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 15,
     alignItems: 'center',
-    zIndex: 50
+    zIndex: 50,
   },
   cardHeader: {
     backgroundColor: 'rgba(253,89,213, 0.20)',
