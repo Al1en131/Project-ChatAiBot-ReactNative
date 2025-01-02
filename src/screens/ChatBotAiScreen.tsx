@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const TWINKLETALK_API_KEY = 'AIzaSyBbA68A7kv0LpPJl1mPd7Nhffv_hRUy28U';
+const TWINKLETALK_API_KEY = 'your Gemini API';
 const API_URL = 'http://10.0.2.2:5000';
 
 type Message = {
