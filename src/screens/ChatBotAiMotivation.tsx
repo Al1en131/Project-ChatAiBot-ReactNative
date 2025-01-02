@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   twinkletalkMessage: {
     borderWidth: 1,
     borderColor: '#FA4B95',
-    backgroundColor: 'rgba(255, 255, 255, 0.18);',
+    backgroundColor: 'rgba(255, 255, 255, 0.10);',
     alignSelf: 'flex-start',
     paddingVertical: 10,
     paddingHorizontal: 15,
